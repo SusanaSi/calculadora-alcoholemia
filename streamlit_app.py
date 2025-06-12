@@ -1,7 +1,6 @@
 
 import streamlit as st
 
-# Datos de bebidas
 bebidas = {
     "Cerveza (330 ml, 5%)": (330, 5),
     "Vino (150 ml, 12%)": (150, 12),
@@ -13,7 +12,6 @@ bebidas = {
 densidad_alcohol = 0.8
 eliminacion_por_hora = 0.15
 
-# Funciones
 def calcular_alcohol_total(ingestas):
     total_alcohol = 0
     for bebida, cantidad in ingestas.items():
@@ -48,7 +46,6 @@ def evaluar_sancion(mg_l, tipo):
     else:
         return "Consulta específica requerida para tu caso."
 
-# Interfaz
 st.title("Calculadora de Alcoholemia (España)")
 
 st.header("Datos personales")
@@ -74,7 +71,7 @@ if st.button("Calcular"):
     else:
         alcohol_total = calcular_alcohol_total(ingestas)
         bac = calcular_bac(alcohol_total, peso, r, horas)
-        bac_mg_l_aire = bac * 0.5  # conversión
+        bac_mg_l_aire = bac * 0.5
         tiempo_extra = tiempo_hasta_limite(bac, limite_legal)
         sancion = evaluar_sancion(bac_mg_l_aire, tipo_conductor)
 
@@ -85,7 +82,6 @@ if st.button("Calcular"):
         st.write(f"**Tiempo estimado hasta estar por debajo del límite legal:** {tiempo_extra:.1f} horas")
         st.warning(f"**Sanción estimada según normativa española:** {sancion}")
 
-        # Mensajes personalizados
         if bac > 2:
             st.error("🚨 Nivel muy alto de alcoholemia. Riesgo severo para la salud.")
         elif bac > 1:
