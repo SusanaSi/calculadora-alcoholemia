@@ -90,3 +90,11 @@ if st.button("Calcular"):
             st.info("ℹ️ Podrías experimentar efectos moderados: euforia, menor coordinación.")
         elif bac > 0:
             st.info("ℹ️ Efectos leves posibles: relajación, reducción de reflejos.")
+st.markdown("---")
+st.markdown(
+    "<div style='text-align: center; font-size: 0.9em;'>"
+    "Aplicación creada por <strong>Susana Simal</strong><br>"
+    "© 2025 Todos los derechos reservados"
+    "</div>",
+    unsafe_allow_html=True
+)
