@@ -75,6 +75,9 @@ st.header("Tipo de conductor")
 tipo_conductor = st.selectbox("Selecciona tu tipo de conductor", ["General", "Novel/Profesional", "Menor"])
 limite_legal = 0.5 if tipo_conductor == "General" else 0.3
 
+reincidente = st.checkbox("¿Eres reincidente en alcoholemia?")
+
+
 st.header("Bebidas ingeridas")
 ingestas = {}
 for bebida in bebidas:
@@ -90,7 +93,7 @@ if st.button("Calcular"):
         bac = calcular_bac(alcohol_total, peso, r, horas)
         bac_mg_l_aire = bac * 0.5
         tiempo_extra = tiempo_hasta_limite(bac, limite_legal)
-        sancion = evaluar_sancion(bac_mg_l_aire, tipo_conductor)
+        sancion = evaluar_sancion(bac_mg_l_aire, tipo_conductor, reincidente=reincidente)
 
         st.subheader("Resultados")
         st.write(f"**BAC estimado (sangre):** {bac:.2f} g/L")
