@@ -1,4 +1,3 @@
-
 import streamlit as st
 
 bebidas = {
@@ -30,22 +29,40 @@ def tiempo_hasta_limite(bac, limite):
         return 0
     return (bac - limite) / eliminacion_por_hora
 
-def evaluar_sancion(mg_l, tipo):
-    if mg_l == 0 and tipo == "Menor":
-        return "Multa: 500 €, 4 puntos (si no se supera 0.5 g/L en sangre)"
-    elif mg_l <= 0.25:
-        return "Multa: 200 €, 2 puntos"
-    elif mg_l <= 0.5 and tipo == "General":
-        return "Multa: 500 €, 4 puntos"
-    elif mg_l <= 0.3 and tipo != "General":
-        return "Multa: 500 €, 4 puntos"
-    elif mg_l > 0.5 and tipo == "General":
-        return "Multa: 1000 €, 6 puntos"
-    elif mg_l > 0.3 and tipo != "General":
-        return "Multa: 1000 €, 6 puntos"
-    else:
-        return "Consulta específica requerida para tu caso."
+def evaluar_sancion(mg_l, tipo, reincidente=False):
+    resultado = ""
 
+    # Vía penal
+    if mg_l >= 0.60:
+        resultado += "🟥 **DELITO**: Conducción bajo influencia del alcohol (≥ 0,60 mg/L aire o ≥ 1,2 g/L sangre).\n"
+        resultado += "- Pena: prisión de 3 a 6 meses, multa de 6 a 12 meses o trabajos comunitarios de 30 a 90 días.\n"
+        resultado += "- Retirada de carnet: 1 a 4 años.\n"
+
+    # Vía administrativa
+    if tipo == "Menor":
+        if mg_l > 0.5:
+            resultado += "🟧 Menores: Tasa superior a 0,50 mg/L → 4 puntos + 1.000 € (salvo patinete/bici)."
+        else:
+            resultado += "🟨 Menores: Tasa hasta 0,50 mg/L → 4 puntos + 500 € (salvo patinete/bici)."
+    elif tipo == "Novel/Profesional":
+        if mg_l > 0.3:
+            resultado += "🟥 Profesionales/Noveles: Tasa > 0,30 mg/L → 6 puntos + 1.000 €"
+        elif mg_l >= 0.15:
+            resultado += "🟨 Profesionales/Noveles: Tasa 0,15–0,30 mg/L → 4 puntos + 500 €"
+    elif tipo == "General":
+        if mg_l > 0.5:
+            resultado += "🟥 General: Tasa > 0,50 mg/L → 6 puntos + 1.000 €"
+        elif mg_l >= 0.25:
+            resultado += "🟨 General: Tasa 0,25–0,50 mg/L → 4 puntos + 500 €"
+        elif mg_l >= 0.1:
+            resultado += "🟦 General: Tasa 0,10–0,25 mg/L → 2 puntos + 200 €"
+
+    if reincidente:
+        resultado += "\n⚠️ Reincidente: multa de 1.000 € + 4 a 6 puntos (según tasa)."
+
+    return resultado
+
+# Interfaz
 st.title("Calculadora de Alcoholemia (España)")
 
 st.header("Datos personales")
@@ -80,7 +97,7 @@ if st.button("Calcular"):
         st.write(f"**Equivalente en aire espirado:** {bac_mg_l_aire:.2f} mg/L")
         st.write(f"**Límite legal para tu caso:** {limite_legal:.2f} g/L sangre ({limite_legal*0.5:.2f} mg/L aire)")
         st.write(f"**Tiempo estimado hasta estar por debajo del límite legal:** {tiempo_extra:.1f} horas")
-        st.warning(f"**Sanción estimada según normativa española:** {sancion}")
+        st.warning(f"**Sanción estimada según normativa española:**\n{sancion}")
 
         if bac > 2:
             st.error("🚨 Nivel muy alto de alcoholemia. Riesgo severo para la salud.")
@@ -90,6 +107,7 @@ if st.button("Calcular"):
             st.info("ℹ️ Podrías experimentar efectos moderados: euforia, menor coordinación.")
         elif bac > 0:
             st.info("ℹ️ Efectos leves posibles: relajación, reducción de reflejos.")
+
 st.markdown("---")
 st.markdown(
     "<div style='text-align: center; font-size: 0.9em;'>"
